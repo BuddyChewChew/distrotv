@@ -29,17 +29,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests==2.31.0 typing-extensions==4.7.1
 
+      - name: Prepare Git and Pull
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          # Pull before running the scraper to ensure a clean slate for rebase
+          git pull origin main --rebase
+
       - name: Run Scraper
         run: python scraper.py
 
       - name: Deploy to Repo
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          
           git add distrotv.m3u distrotv_epg.xml distrotv_channels.json
           
-          # Force an update even if files look identical to avoid 'No changes' skip
-          git pull origin main --rebase
+          # Use --allow-empty so the workflow doesn't fail if no new channels were found
           git commit --allow-empty -m "Auto Update with Enhanced Headers: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
           git push --force origin main
