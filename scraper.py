@@ -64,8 +64,7 @@ class DistroTVScraper:
         referrer = "https://www.distro.tv/"
         
         for ch in sorted(channels, key=lambda x: x['name'].lower()):
-            # Logic: Add headers as KVP tags inside #EXTINF for modern players
-            # and as #EXTVLCOPT lines for VLC/Legacy players.
+            # Logic: Add headers as KVP tags inside #EXTINF and as #EXTVLCOPT lines
             inf_line = (f'#EXTINF:-1 tvg-id="{ch["id"]}" tvg-logo="{ch["logo"]}" '
                         f'group-title="{ch["group"]}" '
                         f'http-referrer="{referrer}" '
@@ -111,3 +110,4 @@ if __name__ == "__main__":
             f.write(scraper.generate_epg_xml(ch_list))
         with open("distrotv_channels.json", "w", encoding="utf-8") as f:
             json.dump(ch_list, f, indent=4)
+        logger.info("Files successfully generated and saved.")
