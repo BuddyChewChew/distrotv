@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -27,18 +26,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests==2.31.0 typing-extensions==4.7.1
 
-      - name: Run Scraper and EPG Generator
-        # This one script now generates all 3 files: .json, .m3u, and .xml
+      - name: Run Scraper
         run: python scraper.py
 
       - name: Deploy to Repo
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
-          # Stage all generated files
           git add distrotv_channels.json distrotv.m3u distrotv_epg.xml
-          
           git commit -m "Update DistroTV Data: $(date -u +'%Y-%m-%d %H:%M:%S') UTC" || exit 0
-          
           git push
