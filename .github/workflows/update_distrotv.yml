@@ -1,12 +1,12 @@
-name: Update DistroTV Playlist
+name: Update DistroTV Playlist and EPG
 
 on:
   schedule:
     - cron: '0 */6 * * *'  # Runs every 6 hours
-  workflow_dispatch:       # Allows manual triggering from the Actions tab
+  workflow_dispatch:       # Allows manual trigger from GitHub Actions tab
   push:
     branches:
-      - main               # Runs whenever you push changes to the main branch
+      - main               # Runs on every push to main
 
 jobs:
   build:
@@ -30,15 +30,18 @@ jobs:
       - name: Run DistroTV Scraper
         run: python scraper.py
 
+      - name: Run EPG Generator
+        run: python epg_gen.py
+
       - name: Deploy to Repo
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Stage both output files for the commit
-          git add distrotv_channels.json distrotv.m3u
+          # Stage the JSON data, M3U playlist, and XML EPG
+          git add distrotv_channels.json distrotv.m3u distrotv_epg.xml
           
-          # Commit with a timestamp for easy tracking
-          git commit -m "Update DistroTV Playlist: $(date -u +'%Y-%m-%d %H:%M:%S') UTC" || exit 0
+          # Commit only if changes exist
+          git commit -m "Update DistroTV Data: $(date -u +'%Y-%m-%d %H:%M:%S') UTC" || exit 0
           
           git push
