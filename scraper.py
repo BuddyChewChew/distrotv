@@ -21,7 +21,6 @@ class DistroTVScraper:
 
     def fetch_channels(self) -> List[Dict[str, Any]]:
         try:
-            # Bypass cache by adding a timestamp to the request
             logger.info(f"Fetching V5 feed for Topic {self.target_topic}...")
             response = requests.get(f"{self.feed_url}?t={int(time.time())}", headers=self.headers, timeout=30)
             response.raise_for_status()
@@ -61,11 +60,8 @@ class DistroTVScraper:
             return []
 
     def generate_m3u(self, channels: List[Dict[str, Any]]):
-        # Force a change in the file by adding a current timestamp comment
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         m3u = [f"#EXTM3U", f"# Last Updated: {now} UTC"]
-        
-        # Consistent User-Agent for the headers
         ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
         
         for ch in sorted(channels, key=lambda x: x['name'].lower()):
