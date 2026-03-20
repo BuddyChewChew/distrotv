@@ -2,7 +2,7 @@ name: Update DistroTV Playlist and EPG
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs every hour
+    - cron: '0 * * * *'
   workflow_dispatch:
   push:
     branches:
@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -31,11 +33,13 @@ jobs:
 
       - name: Deploy to Repo
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add distrotv_channels.json distrotv.m3u distrotv_epg.xml
           
-          # Force the commit to happen to keep tokens fresh
-          git commit --allow-empty -m "Updated DistroTV Streams: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
+          # Force add the files to ensure they are staged
+          git add distrotv.m3u distrotv_epg.xml distrotv_channels.json
           
-          git push
+          # Commit using allow-empty just in case, but the timestamp ensures a change
+          git commit --allow-empty -m "Fresh Streams & Headers: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
+          
+          git push origin main
