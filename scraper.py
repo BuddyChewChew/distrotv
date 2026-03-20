@@ -61,14 +61,15 @@ class DistroTVScraper:
 
     def generate_m3u(self, channels: List[Dict[str, Any]]):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        m3u = [f"#EXTM3U", f"# Last Updated: {now} UTC"]
+        m3u = ["#EXTM3U", f"# Last Updated: {now} UTC"]
         ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
         
         for ch in sorted(channels, key=lambda x: x['name'].lower()):
             m3u.append(f'#EXTINF:-1 tvg-id="{ch["id"]}" tvg-logo="{ch["logo"]}" group-title="{ch["group"]}",{ch["name"]}')
-            m3u.append(f'#EXTVLCOPT:http-referrer=https://www.distro.tv/')
-            m3u.append(f'#EXTVLCOPT:http-origin=https://www.distro.tv/')
-            m3u.append(f'#EXTVLCOPT:http-user-agent={ua}')
+            # CRITICAL HEADERS
+            m3u.append("#EXTVLCOPT:http-referrer=https://www.distro.tv/")
+            m3u.append("#EXTVLCOPT:http-origin=https://www.distro.tv/")
+            m3u.append(f"#EXTVLCOPT:http-user-agent={ua}")
             m3u.append(ch["stream_url"])
             
         return "\n".join(m3u)
